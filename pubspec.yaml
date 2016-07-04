@@ -1,5 +1,5 @@
 name: dart_fpm
-description: A Fast CGI Process Manager for dart
+description: A FastCGI Process Manager(fpm) for dart.
 version: 0.0.1
 #author: Benjamin Jesuiter <email@example.com>
 #homepage: https://www.example.com
@@ -8,7 +8,7 @@ environment:
   sdk: '>=1.0.0 <2.0.0'
 
 dependencies:
-  redstone: any
+  redstone: 0.6.6
 
 dev_dependencies:
   test: '>=0.12.0 <0.13.0'

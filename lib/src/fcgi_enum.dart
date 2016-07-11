@@ -2,6 +2,7 @@ library dart_fpm.fcgi_enum;
 
 import 'package:enums/enums.dart';
 
+/// Values for type component of FCGI_Header
 class FcgiRecordType extends Enum {
 
   static const FcgiRecordType BEGIN_REQUEST = const FcgiRecordType._(1);
@@ -29,6 +30,7 @@ class FcgiRecordType extends Enum {
 
 }
 
+/// Values for role component of FCGI_BeginRequestBody
 class FcgiRequestRole extends Enum {
 
   static const FcgiRequestRole RESPONDER = const FcgiRequestRole._(1);
@@ -47,6 +49,7 @@ class FcgiRequestRole extends Enum {
 
 }
 
+/// Values for protocolStatus component of FCGI_EndRequestBody
 class FcgiProtocolStatus extends Enum {
 
   static const FcgiProtocolStatus REQUEST_COMPLETE = const FcgiProtocolStatus._(0);

@@ -6,6 +6,7 @@
 /// More dartdocs go here.
 library dart_fpm;
 
-export 'src/dart_fpm_base.dart';
+export 'package:dart_fpm/src/fcgi_const.dart';
+export 'package:dart_fpm/src/fcgi_enum.dart';
 
 // TODO: Export any libraries intended for clients of this package.

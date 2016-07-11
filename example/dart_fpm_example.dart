@@ -4,6 +4,4 @@
 import 'package:dart_fpm/dart_fpm.dart';
 
 main() {
-  var awesome = new Awesome();
-  print('awesome: ${awesome.isAwesome}');
 }

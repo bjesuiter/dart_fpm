@@ -61,6 +61,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.2"
+  enums:
+    description:
+      name: enums
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.5"
   glob:
     description:
       name: glob

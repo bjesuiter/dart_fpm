@@ -21,4 +21,8 @@ class ByteReader {
 
   bool available (int bytes) => (_data.lengthInBytes - _offset) >= bytes;
 
+  void skip (int bytes) {
+    _offset += bytes;
+  }
+
 }

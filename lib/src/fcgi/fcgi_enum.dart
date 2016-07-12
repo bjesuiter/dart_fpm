@@ -1,6 +1,7 @@
 library dart_fpm.fcgi_enum;
 
 import 'package:enums/enums.dart';
+import 'package:dart_fpm/src/fcgi/records/records.dart';
 
 /// Values for type component of FCGI_Header
 class FcgiRecordType extends Enum {
@@ -25,6 +26,9 @@ class FcgiRecordType extends Enum {
   static List<FcgiRecordType> get values => Enum.values(FcgiRecordType);
 
   factory FcgiRecordType.fromValue (int value) {
+    if (value == 0 || value > MAXTYPE.value) {
+      throw new FcgiUnknownTypeBody(value);
+    }
     return values[value - 1];
   }
 
@@ -44,6 +48,9 @@ class FcgiRequestRole extends Enum {
   static List<FcgiRequestRole> get values => Enum.values(FcgiRequestRole);
 
   factory FcgiRequestRole.fromValue (int value) {
+    if (value == 0 || value > FILTER.value) {
+      throw new FcgiEndRequestBody(1, FcgiProtocolStatus.UNKNOWN_ROLE);
+    }
     return values[value - 1];
   }
 
@@ -62,9 +69,5 @@ class FcgiProtocolStatus extends Enum {
   const FcgiProtocolStatus._(this.value);
 
   static List<FcgiProtocolStatus> get values => Enum.values(FcgiProtocolStatus);
-
-  factory FcgiProtocolStatus.fromValue (int value) {
-    return values[value - 1];
-  }
 
 }

@@ -21,8 +21,14 @@ class ByteReader {
 
   bool available (int bytes) => (_data.lengthInBytes - _offset) >= bytes;
 
-  void skip (int bytes) {
-    _offset += bytes;
+  void skip (int count) {
+    _offset += count;
+  }
+
+  List<int> nextBytes (int count) {
+    List<int> bytes = _data.sublist(_offset, _offset + count);
+    _offset += count;
+    return bytes;
   }
 
 }

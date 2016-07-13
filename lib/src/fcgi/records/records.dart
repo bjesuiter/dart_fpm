@@ -8,3 +8,4 @@ export 'fcgi_end_request.dart';
 export 'fcgi_unknown_type.dart';
 export 'fcgi_name_value.dart';
 export 'fcgi_unknown_type_record.dart';
+export 'fcgi_stream.dart';

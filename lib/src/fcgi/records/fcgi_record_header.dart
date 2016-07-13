@@ -32,9 +32,9 @@ class FcgiRecordHeader {
     }
   }
 
-  factory FcgiRecordHeader.generateResponse (int requestId, FcgiRecordBody body) {
-    return new FcgiRecordHeader._(FCGI_VERSION_1, body.type, requestId, body.contentLength, (8 - (body.contentLength % 8)) % 8);
-  }
+  FcgiRecordHeader.generateResponse (int requestId, FcgiRecordBody body) :
+    this._(FCGI_VERSION_1, body.type, requestId, body.contentLength,
+          (8 - (body.contentLength % 8)) % 8);
 
   int get bodyLength => contentLength + paddingLength;
 

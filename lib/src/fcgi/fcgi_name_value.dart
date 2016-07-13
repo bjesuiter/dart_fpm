@@ -24,10 +24,8 @@ class FcgiNameValuePair {
 
   static int _getByteLength (int length) => ByteWriter.isMultiByte(length) ? 4 : 1;
 
-  factory FcgiNameValuePair.fromByteStream (ByteReader bytes) {
-    return new FcgiNameValuePair._(bytes.nextBytes(bytes.nextVarByte),
-        bytes.nextBytes(bytes.nextVarByte));
-  }
+  FcgiNameValuePair.fromByteStream (ByteReader bytes) :
+    this._(bytes.nextBytes(bytes.nextVarByte), bytes.nextBytes(bytes.nextVarByte));
 
   List<int> toByteStream () => new ByteWriter().addVarByte(name.length)
       .addVarByte(value.length).addBytes(_name).addBytes(_value).takeBytes();

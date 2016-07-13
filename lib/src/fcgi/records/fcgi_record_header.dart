@@ -16,11 +16,18 @@ class FcgiRecordHeader {
   FcgiRecordHeader._(this.version, this.type, this.requestId, this.contentLength, this.paddingLength);
 
   factory FcgiRecordHeader.fromByteStream (ByteReader bytes) {
-    var header = new FcgiRecordHeader._(bytes.nextByte,
-        new FcgiRecordType.fromValue(bytes.nextByte), bytes.nextShort,
-        bytes.nextShort, bytes.nextByte);
+    int version = bytes.nextByte;
+    int typeValue = bytes.nextByte;
+    int requestId = bytes.nextShort;
+    int contentLength = bytes.nextShort;
+    int paddingLength = bytes.nextByte;
     bytes.skip(1);
-    return header;
+    try {
+      FcgiRecordType type = new FcgiRecordType.fromValue(typeValue);
+      return new FcgiRecordHeader._(version, type, requestId, contentLength, paddingLength);
+    } on FcgiUnknownTypeBody catch (body) {
+      throw new FcgiUnknownTypeRecord(requestId, body, contentLength, paddingLength);
+    }
   }
 
   factory FcgiRecordHeader.generateResponse (int requestId, FcgiRecordBody body) {

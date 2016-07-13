@@ -31,4 +31,10 @@ class ByteReader {
     return bytes;
   }
 
+  List<int> get remainingBytes {
+    List<int> bytes = _data.sublist(_offset);
+    _offset = _data.lengthInBytes;
+    return bytes;
+  }
+
 }

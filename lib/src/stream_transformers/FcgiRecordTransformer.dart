@@ -96,7 +96,7 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
           break;
         case FcgiRecordType.STDIN:
         case FcgiRecordType.DATA:
-        //TODO: add later
+          body = new FcgiStreamBody.fromByteStream(header, dataChunk);
           break;
         default:
         // invalid type - ignore record / send to out stream

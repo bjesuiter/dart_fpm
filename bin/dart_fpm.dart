@@ -16,8 +16,6 @@ main() async {
   ServerSocket serverSocket = await ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, 9999);
 
   await for (var socket in serverSocket) {
-    socket.write("Socket connected. Hello Dude!\n");
-
     socket
         .transform(new FcgiRecordTransformer())
         .listen(
@@ -27,6 +25,8 @@ main() async {
     }, onError: (data) {
       if (data is FcgiRecord)
         socket.add(data.toByteStream());
+    }, onDone: () {
+          //TODO: catch closed socket connection errors
     });
 
 //    socket.listen((data) {

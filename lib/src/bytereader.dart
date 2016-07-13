@@ -19,7 +19,7 @@ class ByteReader {
 
   int get nextVarByte => ((_data.elementAt(_offset) >> 7) == 0) ? nextByte : nextInt;
 
-  bool available (int bytes) => availableBytes >= bytes;
+  bool available (int bytes) => (_data.lengthInBytes - _offset) >= bytes;
 
   void skip (int count) {
     _offset += count;
@@ -36,7 +36,5 @@ class ByteReader {
     _offset = _data.lengthInBytes;
     return bytes;
   }
-
-  int get availableBytes => _data.lengthInBytes - _offset;
 
 }

@@ -6,5 +6,7 @@
 /// More dartdocs go here.
 library dart_fpm;
 
+export 'src/stream_transformers/FcgiRecordTransformer.dart';
+export 'src/fcgi/fcgi.dart';
 
 // TODO: Export any libraries intended for clients of this package.

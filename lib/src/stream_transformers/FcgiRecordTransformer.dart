@@ -39,7 +39,7 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
 
   void handleDataChunk(ByteReader dataChunk) {
     recordLoop:
-    do {
+    while (true) {
       if (header == null) {
         //when reading a new header
         if (!dataChunk.available(FCGI_HEADER_LEN))
@@ -104,7 +104,7 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
 
       //build FcgiRequest
       streamController.add(new FcgiRecord(header, body));
-    } while (dataChunk.availableBytes > 0);
+    }
   }
 
 }

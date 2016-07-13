@@ -19,7 +19,9 @@ class FcgiNameValuePairBody extends FcgiRecordBody {
     List<FcgiNameValuePair> entries = new List();
     int length = 0;
     while (length < header.contentLength) {
-      entries.add(new FcgiNameValuePair.fromByteStream(bytes));
+      var entry = new FcgiNameValuePair.fromByteStream(bytes);
+      entries.add(entry);
+      length += entry.contentLength;
     }
     return new FcgiNameValuePairBody._(header.type, entries);
   }

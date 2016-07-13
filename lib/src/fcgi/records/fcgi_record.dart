@@ -8,11 +8,10 @@ class FcgiRecord {
   final FcgiRecordHeader header;
   final FcgiRecordBody body;
 
-  FcgiRecord._(this.header, this.body);
+  FcgiRecord(this.header, this.body);
 
-  factory FcgiRecord.generateResponse (int requestId, FcgiRecordBody body) {
-    return new FcgiRecord._(new FcgiRecordHeader.generateResponse(requestId, body), body);
-  }
+  FcgiRecord.generateResponse (int requestId, FcgiRecordBody body) :
+      this(new FcgiRecordHeader.generateResponse(requestId, body), body);
 
   List<int> toByteStream () => new ByteWriter().addBytes(header.toByteStream())
       .addBytes(body.toByteStream()).addSpace(header.paddingLength).takeBytes();

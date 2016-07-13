@@ -23,10 +23,12 @@ class FcgiRecordHeader {
     int paddingLength = bytes.nextByte;
     bytes.skip(1);
     try {
-      FcgiRecordType type = new FcgiRecordType.fromValue(typeValue);
-      return new FcgiRecordHeader._(version, type, requestId, contentLength, paddingLength);
+      return new FcgiRecordHeader._(version,
+          new FcgiRecordType.fromValue(typeValue), requestId, contentLength,
+          paddingLength);
     } on FcgiUnknownTypeBody catch (body) {
-      throw new FcgiUnknownTypeRecord(requestId, body, contentLength + paddingLength);
+      throw new FcgiUnknownTypeRecord(requestId, body,
+          contentLength + paddingLength);
     }
   }
 

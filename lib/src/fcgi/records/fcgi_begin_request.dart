@@ -14,11 +14,11 @@ class FcgiBeginRequestBody extends FcgiRecordBody {
   bool get keepAlive => flags & FCGI_KEEP_CONN != 0;
 
   factory FcgiBeginRequestBody.fromByteStream (ByteReader bytes) {
-    FcgiBeginRequestBody body = new FcgiBeginRequestBody._(
-        new FcgiRequestRole.fromValue(bytes.nextShort),
-        bytes.nextByte);
+    int roleValue = bytes.nextShort;
+    int flags = bytes.nextByte;
     bytes.skip(5);
-    return body;
+    return new FcgiBeginRequestBody._(new FcgiRequestRole.fromValue(roleValue),
+        flags);
   }
 
   @override

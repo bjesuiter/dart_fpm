@@ -26,13 +26,15 @@ class FcgiRecordHeader {
       FcgiRecordType type = new FcgiRecordType.fromValue(typeValue);
       return new FcgiRecordHeader._(version, type, requestId, contentLength, paddingLength);
     } on FcgiUnknownTypeBody catch (body) {
-      throw new FcgiUnknownTypeRecord(requestId, body, contentLength, paddingLength);
+      throw new FcgiUnknownTypeRecord(requestId, body, contentLength + paddingLength);
     }
   }
 
   factory FcgiRecordHeader.generateResponse (int requestId, FcgiRecordBody body) {
     return new FcgiRecordHeader._(FCGI_VERSION_1, body.type, requestId, body.contentLength, (8 - (body.contentLength % 8)) % 8);
   }
+
+  int get bodyLength => contentLength + paddingLength;
 
   List<int> toByteStream () => new ByteWriter().addByte(version)
       .addByte(type.value).addShort(requestId).addShort(contentLength)

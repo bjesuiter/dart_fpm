@@ -13,7 +13,7 @@ class FcgiNameValuePairBody extends FcgiRecordBody {
   FcgiNameValuePairBody._(this.type, List<FcgiNameValuePair> entries) :
         _entries = entries,
         contentLength = entries.map((entry) => entry.contentLength)
-            .reduce((l1, l2) => l1 + l2);
+            .fold(0, (l1, l2) => l1 + l2);
 
   factory FcgiNameValuePairBody.fromByteStream (FcgiRecordHeader header, ByteReader bytes) {
     List<FcgiNameValuePair> entries = new List();

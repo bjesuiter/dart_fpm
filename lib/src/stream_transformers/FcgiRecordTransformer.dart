@@ -102,8 +102,11 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
         // invalid type - ignore record / send to out stream
       }
 
+      dataChunk.skip(header.paddingLength);
+
       //build FcgiRequest
       streamController.add(new FcgiRecord(header, body));
+      header = null;
     }
   }
 

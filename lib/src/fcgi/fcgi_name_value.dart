@@ -8,22 +8,19 @@ class FcgiNameValuePair {
 
   final List<int> _name;
   final List<int> _value;
+  final int contentLength;
 
-  FcgiNameValuePair._(this._name, this._value);
+  FcgiNameValuePair._(List<int> name, List<int> value) : _name = name,
+        _value = value,
+        contentLength = _getByteLength(name.length) + name.length +
+        _getByteLength(value.length) + value.length;
 
   FcgiNameValuePair(String name, String value) :
-        _name = UTF8.encode(name), _value = UTF8.encode(value);
+        this._(UTF8.encode(name), UTF8.encode(value));
 
   String get name => UTF8.decode(_name);
 
   String get value => UTF8.decode(_value);
-
-  int get _nameLength => _name.length;
-
-  int get _valueLength => _value.length;
-
-  int get contentLength => _getByteLength(_nameLength) + _nameLength +
-      _getByteLength(_valueLength) + _valueLength;
 
   static int _getByteLength (int length) => ByteWriter.isMultiByte(length) ? 4 : 1;
 
@@ -32,7 +29,7 @@ class FcgiNameValuePair {
         bytes.nextBytes(bytes.nextVarByte));
   }
 
-  List<int> toByteStream () => new ByteWriter().addVarByte(_nameLength)
-      .addVarByte(_valueLength).addBytes(_name).addBytes(_value).takeBytes();
+  List<int> toByteStream () => new ByteWriter().addVarByte(name.length)
+      .addVarByte(value.length).addBytes(_name).addBytes(_value).takeBytes();
 
 }

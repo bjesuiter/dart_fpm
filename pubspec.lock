@@ -91,12 +91,24 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
+  intl:
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.13.0"
   logging:
     description:
       name: logging
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.11.3"
+  logging_handlers:
+    description:
+      name: logging_handlers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.0"
   matcher:
     description:
       name: matcher
@@ -121,6 +133,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.9"
+  petitparser:
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.3"
   plugin:
     description:
       name: plugin

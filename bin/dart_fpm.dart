@@ -3,6 +3,7 @@ library dart_fpm.bin;
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:logging/logging.dart';
+import 'package:logging_handlers/server_logging_handlers.dart';
 import 'package:dart_fpm/dart_fpm.dart';
 
 /// maps request ids to detailed request information
@@ -12,6 +13,10 @@ Logger _libLogger = new Logger("dart_fpm");
 
 main() async {
   hierarchicalLoggingEnabled = true;
+  Logger.root.level = Level.ALL;
+  _libLogger.level = Level.ALL;
+
+  Logger.root.onRecord.listen(new LogPrintHandler());
 
   ServerSocket serverSocket = await ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, 9999);
 
@@ -26,7 +31,7 @@ main() async {
       if (data is FcgiRecord)
         socket.add(data.toByteStream());
     }, onDone: () {
-          //TODO: catch closed socket connection errors
+      //TODO: catch closed socket connection errors
     });
 
 //    socket.listen((data) {

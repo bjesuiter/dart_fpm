@@ -67,7 +67,7 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
         return;
 
 
-      if (header.requestId != 0 &&
+      if (header.requestId != FCGI_NULL_REQUEST_ID &&
           !activeRequests.contains(header.requestId) &&
           header.type != FcgiRecordType.BEGIN_REQUEST) {
         //requestId invalid

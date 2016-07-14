@@ -3,6 +3,7 @@ library dart_fpm.fcgi.records.name_value_body;
 import 'package:dart_fpm/src/fcgi/fcgi.dart';
 import 'package:dart_fpm/src/bytereader.dart';
 import 'package:dart_fpm/src/bytewriter.dart';
+import 'dart:convert';
 
 class FcgiNameValuePairBody extends FcgiRecordBody {
 
@@ -33,18 +34,19 @@ class FcgiNameValuePairBody extends FcgiRecordBody {
     return bytes.takeBytes();
   }
 
-  factory FcgiNameValuePairBody.fromMap (FcgiRecordType type, Map<String, String> map) {
+  factory FcgiNameValuePairBody.fromMap (FcgiRecordType type, Map<String,
+      String> map, {Codec<String, List<int>> codec : UTF8}) {
     List<FcgiNameValuePair> entries = new List();
     map.forEach((key, value) {
-      entries.add(new FcgiNameValuePair(key, value));
+      entries.add(new FcgiNameValuePair(codec.encode(key), codec.encode(value)));
     });
     return new FcgiNameValuePairBody._(type, entries);
   }
 
-  Map<String, String> toMap () {
+  Map<String, String> toMap ({Codec<String, List<int>> codec : UTF8}) {
     Map<String, String> map = new Map();
     _entries.forEach((entry) {
-      map[entry.name] = entry.value;
+      map[codec.decode(entry.name)] = codec.decode(entry.value);
     });
     return map;
   }

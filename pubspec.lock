@@ -241,6 +241,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  worker:
+    description:
+      name: worker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.0"
   yaml:
     description:
       name: yaml

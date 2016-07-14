@@ -23,4 +23,9 @@ class FcgiBeginRequestBody extends FcgiRecordBody {
 
   @override
   FcgiRecordType get type => FcgiRecordType.BEGIN_REQUEST;
+
+  @override
+  String toString() {
+    return 'FcgiBeginRequestBody{role: $role, keepAlive: $keepAlive}';
+  }
 }

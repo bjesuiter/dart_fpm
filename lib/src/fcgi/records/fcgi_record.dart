@@ -16,4 +16,9 @@ class FcgiRecord {
   List<int> toByteStream () => new ByteWriter().addBytes(header.toByteStream())
       .addBytes(body.toByteStream()).addSpace(header.paddingLength).takeBytes();
 
+  @override
+  String toString() {
+    return 'FcgiRecord{header: $header, body: $body}';
+  }
+
 }

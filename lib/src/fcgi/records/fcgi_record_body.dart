@@ -12,4 +12,9 @@ abstract class FcgiRecordBody {
 
   List<int> toByteStream() => _EMPTY_STREAM;
 
+  @override
+  String toString() {
+    return 'FcgiRecordBody{type: $type, contentLength: $contentLength}';
+  }
+
 }

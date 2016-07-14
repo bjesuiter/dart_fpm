@@ -15,4 +15,9 @@ class FcgiUnknownTypeBody extends FcgiRecordBody {
   List<int> toByteStream() => new ByteWriter().addByte(unknownType).addSpace(7)
       .takeBytes();
 
+  @override
+  String toString() {
+    return 'FcgiUnknownTypeBody{unknownType: $unknownType}';
+  }
+
 }

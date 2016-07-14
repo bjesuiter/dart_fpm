@@ -25,4 +25,10 @@ class FcgiNameValuePair {
   List<int> toByteStream () => new ByteWriter().addVarByte(name.length)
       .addVarByte(value.length).addBytes(name).addBytes(value).takeBytes();
 
+  @override
+  String toString() {
+    return 'FcgiNameValuePair{contentLength: $contentLength, name: $name, value: $value}';
+  }
+
+
 }

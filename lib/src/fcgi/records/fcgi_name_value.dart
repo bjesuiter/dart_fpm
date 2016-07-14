@@ -51,4 +51,9 @@ class FcgiNameValuePairBody extends FcgiRecordBody {
     return map;
   }
 
+  @override
+  String toString() {
+    return 'FcgiNameValuePairBody{type: $type, content: ${toMap()}';
+  }
+
 }

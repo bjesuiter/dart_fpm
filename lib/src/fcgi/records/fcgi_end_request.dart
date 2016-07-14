@@ -16,5 +16,9 @@ class FcgiEndRequestBody extends FcgiRecordBody {
   List<int> toByteStream() => new ByteWriter().addInt(appStatus)
       .addByte(protocolStatus.value).addSpace(3).takeBytes();
 
+  @override
+  String toString() {
+    return 'FcgiEndRequestBody{appStatus: $appStatus, protocolStatus: $protocolStatus}';
+  }
 
 }

@@ -42,4 +42,9 @@ class FcgiRecordHeader {
       .addByte(type.value).addShort(requestId).addShort(contentLength)
       .addByte(paddingLength).addSpace(1).takeBytes();
 
+  @override
+  String toString() {
+    return 'FcgiRecordHeader{version: $version, type: $type, requestId: $requestId, contentLength: $contentLength, paddingLength: $paddingLength}';
+  }
+
 }

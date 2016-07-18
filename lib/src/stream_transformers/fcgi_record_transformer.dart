@@ -1,4 +1,4 @@
-library dart_fpm.fcgiRecordTransformer;
+library dart_fpm.fcgi_record_transformer;
 
 import 'dart:async';
 import 'dart:io';

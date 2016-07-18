@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart';
 import 'package:dart_fpm/dart_fpm.dart';
 import 'package:stream_channel/stream_channel.dart';
+import 'handle_connection.dart';
 
 /// maps request ids to detailed request information
 Map<int, dynamic> requests;

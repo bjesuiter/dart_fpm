@@ -7,4 +7,5 @@
 library dart_fpm;
 
 export 'src/stream_transformers/fcgi_record_transformer.dart';
+export 'src/stream_transformers/fcgi_request_transformer.dart';
 export 'src/fcgi/fcgi.dart';

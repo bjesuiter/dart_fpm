@@ -30,7 +30,7 @@ class FcgiStreamBody extends FcgiRecordBody {
 
   @override
   String toString({Codec<String, List<int>> codec : UTF8}) {
-    return codec.decode(bytes);
+    return codec.decode(bytes ?? super.toByteStream());
   }
 
 

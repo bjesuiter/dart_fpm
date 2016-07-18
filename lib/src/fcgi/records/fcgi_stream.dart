@@ -10,8 +10,13 @@ class FcgiStreamBody extends FcgiRecordBody {
   final List<int> bytes;
   final int contentLength;
 
-  FcgiStreamBody(this.type, List<int> bytes) : this.bytes = new List.from(bytes),
-        contentLength = bytes.length;
+  FcgiStreamBody._(this.type, this.bytes, this.contentLength);
+
+  FcgiStreamBody(FcgiRecordType type, List<int> bytes) :
+        this._(type, new List.from(bytes), bytes.length);
+
+  FcgiStreamBody.empty(FcgiRecordType type) :
+        this._(type, null, 0);
 
   FcgiStreamBody.fromString(FcgiRecordType type, String content,
       {Codec<String, List<int>> codec : UTF8}) :
@@ -21,7 +26,7 @@ class FcgiStreamBody extends FcgiRecordBody {
     this(header.type, bytes.nextBytes(header.contentLength));
 
   @override
-  List<int> toByteStream() => new List.from(bytes);
+  List<int> toByteStream() => bytes == null ? super.toByteStream() : new List.from(bytes);
 
   @override
   String toString({Codec<String, List<int>> codec : UTF8}) {

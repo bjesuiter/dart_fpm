@@ -11,9 +11,6 @@ Map<int, dynamic> requests;
 
 Logger _libLogger = new Logger("dart_fpm");
 
-//only for testing!!!
-int counter = 0;
-
 main() async {
   hierarchicalLoggingEnabled = true;
   Logger.root.level = Level.ALL;
@@ -21,7 +18,9 @@ main() async {
 
   Logger.root.onRecord.listen(new LogPrintHandler());
 
-  ServerSocket serverSocket = await ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, 9999);
+  ServerSocket serverSocket = await ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, 9090);
+
+  bool keepAlive;
 
 
   await for (var socket in serverSocket) {
@@ -29,49 +28,52 @@ main() async {
         .transform(new FcgiRecordTransformer())
         .listen((FcgiRecord record) {
       //TODO: implement record handling
-      _libLogger.info(record.header.type.toString());
+      _libLogger.info("-> $record");
 
-      FcgiRecord response;
+      if (record.header.type == FcgiRecordType.BEGIN_REQUEST) {
+        FcgiBeginRequestBody body = record.body;
+        keepAlive = body.keepAlive;
+      }
 
-      //only for testing
-      counter++;
-      if (counter < 4) return;
+      if (record.header.type == FcgiRecordType.STDIN && record.body.contentLength == 0) {
+        FcgiRecord response;
 
-      //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
-      response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiStreamBody(FcgiRecordType.STDOUT, new AsciiCodec().encode("Content-type: text/html\r\n\r\n")));
+        //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
+        response = new FcgiRecord.generateResponse(record.header.requestId,
+            new FcgiStreamBody.fromString(FcgiRecordType.STDOUT,
+                '''Content-Type: text/html; encoding=utf-8
 
-      socketAdd(socket, response);
+<!DOCTYPE html>
+  <html>
+  <body>
 
-      response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiStreamBody.fromString(FcgiRecordType.STDOUT, "Hello World!"));
+  <h1>My First Heading</h1>
 
-      socketAdd(socket, response);
+  <p>My first paragraph.</p>
 
-      response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiStreamBody.fromString(FcgiRecordType.STDOUT,
-              '''
-                <!DOCTYPE html>
-<html>
-<body>
-
-<h1>My First Heading</h1>
-
-<p>My first paragraph.</p>
-
-</body>
-</html>
+  </body>
+  </html>
 
 
-                '''
-          ));
+                  '''
+            ));
 
-      socketAdd(socket, response);
+        socketAdd(socket, response);
 
-      response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiEndRequestBody(1, FcgiProtocolStatus.REQUEST_COMPLETE));
+        //IMPORTANT: TERMINATE STREAMS WITH EMPTY RECORD
+        response = new FcgiRecord.generateResponse(record.header.requestId,
+            new FcgiStreamBody.empty(FcgiRecordType.STDOUT));
 
-      socketAdd(socket, response);
+        socketAdd(socket, response);
+
+        response = new FcgiRecord.generateResponse(record.header.requestId,
+            new FcgiEndRequestBody(0, FcgiProtocolStatus.REQUEST_COMPLETE));
+
+        socketAdd(socket, response);
+        if (!keepAlive) {
+          socket.close();
+        }
+      }
 
     }, onError: (data) {
       //TODO: check if stream is already closed (SocketException)
@@ -80,18 +82,22 @@ main() async {
         return;
       }
 
-      if (data is FcgiRecord)
-        socket.add(data.toByteStream());
+      if (data is FcgiRecord) {
+        int requestId = data.header.requestId;
+        if (requestId != FCGI_NULL_REQUEST_ID) {
+          socketAdd(socket, new FcgiRecord.generateResponse(requestId,
+              new FcgiStreamBody.empty(FcgiRecordType.STDOUT)));
+          socketAdd(socket, new FcgiRecord.generateResponse(requestId,
+              new FcgiStreamBody.empty(FcgiRecordType.STDERR)));
+        }
+        socketAdd(socket, data);
+      }
     });
   }
 }
 
 socketAdd(Socket socket, FcgiRecord record) {
-  _libLogger.info(record.header.type);
+  _libLogger.info("<- $record");
 
   socket.add(record.toByteStream());
-
-  if (record.header.type == FcgiRecordType.END_REQUEST) {
-    counter = 0;
-  }
 }

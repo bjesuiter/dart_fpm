@@ -1,64 +1,56 @@
 library dart_fpm.handle_connection;
 
 import 'dart:io';
+import 'dart:async';
 import 'package:dart_fpm/dart_fpm.dart';
 import 'package:logging/logging.dart';
 
 Logger _log = new Logger("dart_fpm.handle_connection");
 
 handleConnection(Socket socket) {
-  bool keepAlive;
+
+  StreamController<FcgiRecord> managementRecords = new StreamController();
+  managementRecords.stream.listen((record) {
+    //TODO: handle management records
+  });
 
   socket
       .transform(new FcgiRecordTransformer())
-      .listen((FcgiRecord record) {
-    //TODO: implement record handling
-    _log.info("-> $record");
+      .transform(new FcgiRequestTransformer(managementRecords))
+      .listen((Request request) {
+      Response response = new Response(request.requestId, (response, data) {
+        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
+            new FcgiStreamBody.fromString(RecordType.STDOUT, data.toString())));
+      }, (response, error) {
+        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
+            new FcgiStreamBody.fromString(RecordType.STDERR, error.toString())));
+      }, (response) {
+        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
+            new FcgiStreamBody.empty(RecordType.STDOUT)));
+        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
+            new FcgiStreamBody.empty(RecordType.STDERR)));
+        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
+            new EndRequestBody(response.appStatus, response.protocolStatus)));
+        if (!request.keepAlive) {
+          socket.close();
+        }
+      });
 
-    if (record.header.type == RecordType.BEGIN_REQUEST) {
-      BeginRequestBody body = record.body;
-      keepAlive = body.keepAlive;
-    }
-
-    if (record.header.type == RecordType.STDIN && record.body.contentLength == 0) {
-      FcgiRecord response;
-
-      //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
-      response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiStreamBody.fromString(RecordType.STDOUT,
-              '''Content-Type: text/html; encoding=utf-8
-
+    //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
+//    response.header("Content-Type: text/html; encoding=utf-8");
+    response.output.add('''
 <!DOCTYPE html>
-  <html>
-  <body>
-
-  <h1>My First Heading</h1>
-
-  <p>My first paragraph.</p>
-
-  </body>
-  </html>
-
-
-                  '''
-          ));
-
-      socketAdd(socket, response);
-
-      //IMPORTANT: TERMINATE STREAMS WITH EMPTY RECORD
-      response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiStreamBody.empty(RecordType.STDOUT));
-
-      socketAdd(socket, response);
-
-      response = new FcgiRecord.generateResponse(record.header.requestId,
-          new EndRequestBody(0, ProtocolStatus.REQUEST_COMPLETE));
-
-      socketAdd(socket, response);
-      if (!keepAlive) {
-        socket.close();
-      }
-    }
+<html>
+<head>
+<title>Test</title>
+</head>
+<body>
+<h1>My First Heading</h1>
+<p>My first paragraph.</p>
+</body>
+</html>
+''');
+      response.close();
   }, onError: (data) {
     //TODO: check if stream is already closed (SocketException)
     if (data is SocketException) {

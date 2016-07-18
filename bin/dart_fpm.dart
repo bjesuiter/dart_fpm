@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart';
 import 'package:dart_fpm/dart_fpm.dart';
 import 'package:stream_channel/stream_channel.dart';
+import 'package:isolate/isolate.dart';
 import 'handle_connection.dart';
 
 /// maps request ids to detailed request information
@@ -20,21 +21,15 @@ main() async {
 
   Logger.root.onRecord.listen(new LogPrintHandler());
 
-  ServerSocket serverSocket = await ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, 9090);
+  ServerSocket serverSocket = await ServerSocket.bind(InternetAddress.LOOPBACK_IP_V4, 9090, shared: true);
 
 //  LoadBalancer loadBalancer = await LoadBalancer.create(4, IsolateRunner.spawn);
 
+  var port = new ReceivePort();
+  var isolate = await Isolate.spawnUri(new Uri.file("connection_isolate.dart"), [], port.sendPort);
+  var channel = new IsolateChannel.connectReceive(port);
 
-  await for (var socket in serverSocket) {
-//    loadBalancer.run(handleConnection, socket);
-
-    handleConnection(socket);
-
-    var port = new ReceivePort();
-    var isolate = await Isolate.spawnUri(new Uri.file("connection_isolate.dart"), [], port.sendPort);
-    var channel = new IsolateChannel.connectReceive(port);
-
-  }
+  channel.sink.add(123456);
 }
 
 

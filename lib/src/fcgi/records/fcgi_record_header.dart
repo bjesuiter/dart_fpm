@@ -27,8 +27,7 @@ class FcgiRecordHeader {
           new FcgiRecordType.fromValue(typeValue), requestId, contentLength,
           paddingLength);
     } on FcgiUnknownTypeBody catch (body) {
-      throw new FcgiUnknownTypeRecord(requestId, body,
-          contentLength + paddingLength);
+      throw new FcgiUnknownTypeRecord(body, contentLength + paddingLength);
     }
   }
 

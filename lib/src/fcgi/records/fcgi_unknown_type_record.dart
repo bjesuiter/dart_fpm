@@ -6,8 +6,8 @@ class FcgiUnknownTypeRecord extends FcgiRecord {
 
   final int bodyLength;
 
-  FcgiUnknownTypeRecord(int requestId, FcgiRecordBody body,
+  FcgiUnknownTypeRecord(FcgiRecordBody body,
       this.bodyLength) :
-        super.generateResponse(requestId, body);
+        super.generateResponse(FCGI_NULL_REQUEST_ID, body);
 
 }

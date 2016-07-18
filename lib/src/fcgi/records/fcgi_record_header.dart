@@ -8,7 +8,7 @@ import 'package:dart_fpm/src/bytewriter.dart';
 class FcgiRecordHeader {
 
   final int version;
-  final FcgiRecordType type;
+  final RecordType type;
   final int requestId;
   final int contentLength;
   final int paddingLength;
@@ -24,10 +24,10 @@ class FcgiRecordHeader {
     bytes.skip(1);
     try {
       return new FcgiRecordHeader._(version,
-          new FcgiRecordType.fromValue(typeValue), requestId, contentLength,
+          new RecordType.fromValue(typeValue), requestId, contentLength,
           paddingLength);
-    } on FcgiUnknownTypeBody catch (body) {
-      throw new FcgiUnknownTypeRecord(body, contentLength + paddingLength);
+    } on UnknownTypeBody catch (body) {
+      throw new UnknownTypeRecord(body, contentLength + paddingLength);
     }
   }
 

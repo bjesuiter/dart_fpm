@@ -8,7 +8,7 @@ abstract class FcgiRecordBody {
 
   int get contentLength => 8;
 
-  FcgiRecordType get type;
+  RecordType get type;
 
   List<int> toByteStream() => _EMPTY_STREAM;
 

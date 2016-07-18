@@ -6,19 +6,19 @@ import 'dart:convert';
 
 class FcgiStreamBody extends FcgiRecordBody {
 
-  final FcgiRecordType type;
+  final RecordType type;
   final List<int> bytes;
   final int contentLength;
 
   FcgiStreamBody._(this.type, this.bytes, this.contentLength);
 
-  FcgiStreamBody(FcgiRecordType type, List<int> bytes) :
+  FcgiStreamBody(RecordType type, List<int> bytes) :
         this._(type, new List.from(bytes), bytes.length);
 
-  FcgiStreamBody.empty(FcgiRecordType type) :
+  FcgiStreamBody.empty(RecordType type) :
         this._(type, null, 0);
 
-  FcgiStreamBody.fromString(FcgiRecordType type, String content,
+  FcgiStreamBody.fromString(RecordType type, String content,
       {Codec<String, List<int>> codec : UTF8}) :
       this(type, codec.encode(content));
 

@@ -31,17 +31,17 @@ class ConnectionTask implements Task {
 
       //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
       response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiStreamBody.fromString(FcgiRecordType.STDOUT, "Content-type: text/html\r\n\r\n"));
+          new FcgiStreamBody.fromString(RecordType.STDOUT, "Content-type: text/html\r\n\r\n"));
 
       socketAdd(socket, response);
 
       response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiStreamBody.fromString(FcgiRecordType.STDOUT, "Hello World!"));
+          new FcgiStreamBody.fromString(RecordType.STDOUT, "Hello World!"));
 
       socketAdd(socket, response);
 
       response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiStreamBody.fromString(FcgiRecordType.STDOUT,
+          new FcgiStreamBody.fromString(RecordType.STDOUT,
               '''
                 <!DOCTYPE html>
 <html>
@@ -61,7 +61,7 @@ class ConnectionTask implements Task {
       socketAdd(socket, response);
 
       response = new FcgiRecord.generateResponse(record.header.requestId,
-          new FcgiEndRequestBody(1, FcgiProtocolStatus.REQUEST_COMPLETE));
+          new EndRequestBody(1, ProtocolStatus.REQUEST_COMPLETE));
 
       socketAdd(socket, response);
     }, onError: (data) {
@@ -81,7 +81,7 @@ class ConnectionTask implements Task {
 
     socket.add(record.toByteStream());
 
-    if (record.header.type == FcgiRecordType.END_REQUEST) {
+    if (record.header.type == RecordType.END_REQUEST) {
       counter = 0;
     }
   }

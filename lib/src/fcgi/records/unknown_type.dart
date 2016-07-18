@@ -3,13 +3,13 @@ library dart_fpm.fcgi.records.unknown_type_body;
 import 'package:dart_fpm/src/fcgi/fcgi.dart';
 import 'package:dart_fpm/src/bytewriter.dart';
 
-class FcgiUnknownTypeBody extends FcgiRecordBody {
+class UnknownTypeBody extends FcgiRecordBody {
 
   final int unknownType;
 
-  FcgiUnknownTypeBody(this.unknownType);
+  UnknownTypeBody(this.unknownType);
 
-  FcgiRecordType get type => FcgiRecordType.UNKNOWN_TYPE;
+  RecordType get type => RecordType.UNKNOWN_TYPE;
 
   @override
   List<int> toByteStream() => new ByteWriter().addByte(unknownType).addSpace(7)

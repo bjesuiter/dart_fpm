@@ -47,7 +47,7 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
 
         try {
           header = new FcgiRecordHeader.fromByteStream(dataChunk);
-        } on FcgiUnknownTypeRecord catch (record) {
+        } on UnknownTypeRecord catch (record) {
           //unknown record type - skip that body and give to outStream as error!
           streamController.addError(record);
 
@@ -69,7 +69,7 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
 
       if (header.requestId != FCGI_NULL_REQUEST_ID &&
           !activeRequests.contains(header.requestId) &&
-          header.type != FcgiRecordType.BEGIN_REQUEST) {
+          header.type != RecordType.BEGIN_REQUEST) {
         //requestId invalid
         dataChunk.skip(header.bodyLength);
         header = null;
@@ -79,25 +79,25 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
       FcgiRecordBody body;
 
       switch (header.type) {
-        case FcgiRecordType.BEGIN_REQUEST:
+        case RecordType.BEGIN_REQUEST:
           try {
-            body = new FcgiBeginRequestBody.fromByteStream(dataChunk);
-          } on FcgiEndRequestBody catch (error) {
+            body = new BeginRequestBody.fromByteStream(dataChunk);
+          } on EndRequestBody catch (error) {
             streamController.addError(new FcgiRecord.generateResponse(header.requestId, error));
             header = null;
             continue recordLoop;
           }
           activeRequests.add(header.requestId);
           break;
-        case FcgiRecordType.ABORT_REQUEST:
+        case RecordType.ABORT_REQUEST:
           body = null;
           break;
-        case FcgiRecordType.GET_VALUES:
-        case FcgiRecordType.PARAMS:
-          body = new FcgiNameValuePairBody.fromByteStream(header, dataChunk);
+        case RecordType.GET_VALUES:
+        case RecordType.PARAMS:
+          body = new NameValuePairBody.fromByteStream(header, dataChunk);
           break;
-        case FcgiRecordType.STDIN:
-        case FcgiRecordType.DATA:
+        case RecordType.STDIN:
+        case RecordType.DATA:
           body = new FcgiStreamBody.fromByteStream(header, dataChunk);
           break;
         default:

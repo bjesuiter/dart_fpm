@@ -4,30 +4,30 @@ import 'package:enums/enums.dart';
 import 'package:dart_fpm/src/fcgi/records/records.dart';
 
 /// Values for type component of FCGI_Header
-class FcgiRecordType extends Enum {
+class RecordType extends Enum {
 
-  static const FcgiRecordType BEGIN_REQUEST = const FcgiRecordType._(1);
-  static const FcgiRecordType ABORT_REQUEST = const FcgiRecordType._(2);
-  static const FcgiRecordType END_REQUEST = const FcgiRecordType._(3);
-  static const FcgiRecordType PARAMS = const FcgiRecordType._(4);
-  static const FcgiRecordType STDIN = const FcgiRecordType._(5);
-  static const FcgiRecordType STDOUT = const FcgiRecordType._(6);
-  static const FcgiRecordType STDERR = const FcgiRecordType._(7);
-  static const FcgiRecordType DATA = const FcgiRecordType._(8);
-  static const FcgiRecordType GET_VALUES = const FcgiRecordType._(9);
-  static const FcgiRecordType GET_VALUES_RESULT = const FcgiRecordType._(10);
-  static const FcgiRecordType UNKNOWN_TYPE = const FcgiRecordType._(11);
-  static const FcgiRecordType MAXTYPE = UNKNOWN_TYPE;
+  static const RecordType BEGIN_REQUEST = const RecordType._(1);
+  static const RecordType ABORT_REQUEST = const RecordType._(2);
+  static const RecordType END_REQUEST = const RecordType._(3);
+  static const RecordType PARAMS = const RecordType._(4);
+  static const RecordType STDIN = const RecordType._(5);
+  static const RecordType STDOUT = const RecordType._(6);
+  static const RecordType STDERR = const RecordType._(7);
+  static const RecordType DATA = const RecordType._(8);
+  static const RecordType GET_VALUES = const RecordType._(9);
+  static const RecordType GET_VALUES_RESULT = const RecordType._(10);
+  static const RecordType UNKNOWN_TYPE = const RecordType._(11);
+  static const RecordType MAXTYPE = UNKNOWN_TYPE;
 
   final int value;
 
-  const FcgiRecordType._(this.value);
+  const RecordType._(this.value);
 
-  static List<FcgiRecordType> get values => Enum.values(FcgiRecordType);
+  static List<RecordType> get values => Enum.values(RecordType);
 
-  factory FcgiRecordType.fromValue (int value) {
+  factory RecordType.fromValue (int value) {
     if (value == 0 || value > MAXTYPE.value) {
-      throw new FcgiUnknownTypeBody(value);
+      throw new UnknownTypeBody(value);
     }
     return values[value - 1];
   }
@@ -35,21 +35,21 @@ class FcgiRecordType extends Enum {
 }
 
 /// Values for role component of FCGI_BeginRequestBody
-class FcgiRequestRole extends Enum {
+class RequestRole extends Enum {
 
-  static const FcgiRequestRole RESPONDER = const FcgiRequestRole._(1);
-  static const FcgiRequestRole AUTHORIZER = const FcgiRequestRole._(2);
-  static const FcgiRequestRole FILTER = const FcgiRequestRole._(3);
+  static const RequestRole RESPONDER = const RequestRole._(1);
+  static const RequestRole AUTHORIZER = const RequestRole._(2);
+  static const RequestRole FILTER = const RequestRole._(3);
 
   final int value;
 
-  const FcgiRequestRole._(this.value);
+  const RequestRole._(this.value);
 
-  static List<FcgiRequestRole> get values => Enum.values(FcgiRequestRole);
+  static List<RequestRole> get values => Enum.values(RequestRole);
 
-  factory FcgiRequestRole.fromValue (int value) {
+  factory RequestRole.fromValue (int value) {
     if (value == 0 || value > FILTER.value) {
-      throw new FcgiEndRequestBody(1, FcgiProtocolStatus.UNKNOWN_ROLE);
+      throw new EndRequestBody(1, ProtocolStatus.UNKNOWN_ROLE);
     }
     return values[value - 1];
   }
@@ -57,17 +57,17 @@ class FcgiRequestRole extends Enum {
 }
 
 /// Values for protocolStatus component of FCGI_EndRequestBody
-class FcgiProtocolStatus extends Enum {
+class ProtocolStatus extends Enum {
 
-  static const FcgiProtocolStatus REQUEST_COMPLETE = const FcgiProtocolStatus._(0);
-  static const FcgiProtocolStatus CANT_MPX_CONN = const FcgiProtocolStatus._(1);
-  static const FcgiProtocolStatus OVERLOADED = const FcgiProtocolStatus._(2);
-  static const FcgiProtocolStatus UNKNOWN_ROLE = const FcgiProtocolStatus._(3);
+  static const ProtocolStatus REQUEST_COMPLETE = const ProtocolStatus._(0);
+  static const ProtocolStatus CANT_MPX_CONN = const ProtocolStatus._(1);
+  static const ProtocolStatus OVERLOADED = const ProtocolStatus._(2);
+  static const ProtocolStatus UNKNOWN_ROLE = const ProtocolStatus._(3);
 
   final int value;
 
-  const FcgiProtocolStatus._(this.value);
+  const ProtocolStatus._(this.value);
 
-  static List<FcgiProtocolStatus> get values => Enum.values(FcgiProtocolStatus);
+  static List<ProtocolStatus> get values => Enum.values(ProtocolStatus);
 
 }

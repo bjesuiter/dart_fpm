@@ -5,18 +5,18 @@ import 'package:dart_fpm/src/bytereader.dart';
 import 'package:dart_fpm/src/bytewriter.dart';
 import 'dart:convert';
 
-class FcgiNameValuePairBody extends FcgiRecordBody {
+class NameValuePairBody extends FcgiRecordBody {
 
-  final FcgiRecordType type;
+  final RecordType type;
   final List<FcgiNameValuePair> _entries;
   final int contentLength;
 
-  FcgiNameValuePairBody._(this.type, List<FcgiNameValuePair> entries) :
+  NameValuePairBody._(this.type, List<FcgiNameValuePair> entries) :
         _entries = entries,
         contentLength = entries.map((entry) => entry.contentLength)
             .fold(0, (l1, l2) => l1 + l2);
 
-  factory FcgiNameValuePairBody.fromByteStream (FcgiRecordHeader header, ByteReader bytes) {
+  factory NameValuePairBody.fromByteStream (FcgiRecordHeader header, ByteReader bytes) {
     List<FcgiNameValuePair> entries = new List();
     int length = 0;
     while (length < header.contentLength) {
@@ -24,7 +24,7 @@ class FcgiNameValuePairBody extends FcgiRecordBody {
       entries.add(entry);
       length += entry.contentLength;
     }
-    return new FcgiNameValuePairBody._(header.type, entries);
+    return new NameValuePairBody._(header.type, entries);
   }
 
   @override
@@ -34,13 +34,13 @@ class FcgiNameValuePairBody extends FcgiRecordBody {
     return bytes.takeBytes();
   }
 
-  factory FcgiNameValuePairBody.fromMap (FcgiRecordType type, Map<String,
+  factory NameValuePairBody.fromMap (RecordType type, Map<String,
       String> map, {Codec<String, List<int>> codec : UTF8}) {
     List<FcgiNameValuePair> entries = new List();
     map.forEach((key, value) {
       entries.add(new FcgiNameValuePair(codec.encode(key), codec.encode(value)));
     });
-    return new FcgiNameValuePairBody._(type, entries);
+    return new NameValuePairBody._(type, entries);
   }
 
   Map<String, String> toMap ({Codec<String, List<int>> codec : UTF8}) {

@@ -30,17 +30,17 @@ main() async {
       //TODO: implement record handling
       _libLogger.info("-> $record");
 
-      if (record.header.type == FcgiRecordType.BEGIN_REQUEST) {
-        FcgiBeginRequestBody body = record.body;
+      if (record.header.type == RecordType.BEGIN_REQUEST) {
+        BeginRequestBody body = record.body;
         keepAlive = body.keepAlive;
       }
 
-      if (record.header.type == FcgiRecordType.STDIN && record.body.contentLength == 0) {
+      if (record.header.type == RecordType.STDIN && record.body.contentLength == 0) {
         FcgiRecord response;
 
         //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
         response = new FcgiRecord.generateResponse(record.header.requestId,
-            new FcgiStreamBody.fromString(FcgiRecordType.STDOUT,
+            new FcgiStreamBody.fromString(RecordType.STDOUT,
                 '''Content-Type: text/html; encoding=utf-8
 
 <!DOCTYPE html>
@@ -62,12 +62,12 @@ main() async {
 
         //IMPORTANT: TERMINATE STREAMS WITH EMPTY RECORD
         response = new FcgiRecord.generateResponse(record.header.requestId,
-            new FcgiStreamBody.empty(FcgiRecordType.STDOUT));
+            new FcgiStreamBody.empty(RecordType.STDOUT));
 
         socketAdd(socket, response);
 
         response = new FcgiRecord.generateResponse(record.header.requestId,
-            new FcgiEndRequestBody(0, FcgiProtocolStatus.REQUEST_COMPLETE));
+            new EndRequestBody(0, ProtocolStatus.REQUEST_COMPLETE));
 
         socketAdd(socket, response);
         if (!keepAlive) {
@@ -86,9 +86,9 @@ main() async {
         int requestId = data.header.requestId;
         if (requestId != FCGI_NULL_REQUEST_ID) {
           socketAdd(socket, new FcgiRecord.generateResponse(requestId,
-              new FcgiStreamBody.empty(FcgiRecordType.STDOUT)));
+              new FcgiStreamBody.empty(RecordType.STDOUT)));
           socketAdd(socket, new FcgiRecord.generateResponse(requestId,
-              new FcgiStreamBody.empty(FcgiRecordType.STDERR)));
+              new FcgiStreamBody.empty(RecordType.STDERR)));
         }
         socketAdd(socket, data);
       }

@@ -10,46 +10,46 @@ import 'package:logging/logging.dart';
 /// Fast CGI Records
 class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> {
 
-  StreamController streamController = new StreamController();
-  Logger _log = new Logger("FcgiRecordTransformer");
+  final StreamController _streamController = new StreamController();
+  final Logger _log = new Logger("FcgiRecordTransformer");
 
-  List<int> buffer = new List();
-  List<int> activeRequests = new List();
-  FcgiRecordHeader header;
+  List<int> _buffer = new List();
+  List<int> _activeRequests = new List();
+  FcgiRecordHeader _header;
 
   ///this var holds bytes to skip, if an invalid record type appeared
-  int skipBytes = 0;
+  int _skipBytes = 0;
 
   @override
   Stream bind(Stream inStream) {
     inStream.listen((List<int> dataChunk) {
-      buffer.addAll(dataChunk);
-      if (skipBytes != 0 && buffer.length < skipBytes) {
+      _buffer.addAll(dataChunk);
+      if (_skipBytes != 0 && _buffer.length < _skipBytes) {
         return;
       }
-      var byteReader = new ByteReader(buffer, offset: skipBytes);
+      var byteReader = new ByteReader(_buffer, offset: _skipBytes);
       //reset skip bytes
-      skipBytes = 0;
-      handleDataChunk(byteReader);
-      buffer = byteReader.remainingBytes;
+      _skipBytes = 0;
+      _handleDataChunk(byteReader);
+      _buffer = byteReader.remainingBytes;
     });
 
-    return streamController.stream;
+    return _streamController.stream;
   }
 
-  void handleDataChunk(ByteReader dataChunk) {
+  void _handleDataChunk(ByteReader dataChunk) {
     recordLoop:
     while (true) {
-      if (header == null) {
+      if (_header == null) {
         //when reading a new header
         if (!dataChunk.available(FCGI_HEADER_LEN))
           return;
 
         try {
-          header = new FcgiRecordHeader.fromByteStream(dataChunk);
+          _header = new FcgiRecordHeader.fromByteStream(dataChunk);
         } on UnknownTypeRecord catch (record) {
           //unknown record type - skip that body and give to outStream as error!
-          streamController.addError(record);
+          _streamController.addError(record);
 
           if (dataChunk.available(record.bodyLength)) {
             dataChunk.skip(record.bodyLength);
@@ -57,58 +57,58 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
           }
 
           //case if data to skip is not completely available
-          skipBytes = record.bodyLength;
+          _skipBytes = record.bodyLength;
           return;
         }
       }
 
       //when reading body of record
-      if (!dataChunk.available(header.bodyLength))
+      if (!dataChunk.available(_header.bodyLength))
         return;
 
 
-      if (header.requestId != FCGI_NULL_REQUEST_ID &&
-          !activeRequests.contains(header.requestId) &&
-          header.type != RecordType.BEGIN_REQUEST) {
+      if (_header.requestId != FCGI_NULL_REQUEST_ID &&
+          !_activeRequests.contains(_header.requestId) &&
+          _header.type != RecordType.BEGIN_REQUEST) {
         //requestId invalid
-        dataChunk.skip(header.bodyLength);
-        header = null;
+        dataChunk.skip(_header.bodyLength);
+        _header = null;
         continue;
       }
 
       FcgiRecordBody body;
 
-      switch (header.type) {
+      switch (_header.type) {
         case RecordType.BEGIN_REQUEST:
           try {
             body = new BeginRequestBody.fromByteStream(dataChunk);
           } on EndRequestBody catch (error) {
-            streamController.addError(new FcgiRecord.generateResponse(header.requestId, error));
-            header = null;
+            _streamController.addError(new FcgiRecord.generateResponse(_header.requestId, error));
+            _header = null;
             continue recordLoop;
           }
-          activeRequests.add(header.requestId);
+          _activeRequests.add(_header.requestId);
           break;
         case RecordType.ABORT_REQUEST:
           body = null;
           break;
         case RecordType.GET_VALUES:
         case RecordType.PARAMS:
-          body = new NameValuePairBody.fromByteStream(header, dataChunk);
+          body = new NameValuePairBody.fromByteStream(_header, dataChunk);
           break;
         case RecordType.STDIN:
         case RecordType.DATA:
-          body = new FcgiStreamBody.fromByteStream(header, dataChunk);
+          body = new FcgiStreamBody.fromByteStream(_header, dataChunk);
           break;
         default:
         // invalid type - ignore record / send to out stream
       }
 
-      dataChunk.skip(header.paddingLength);
+      dataChunk.skip(_header.paddingLength);
 
       //build FcgiRequest
-      streamController.add(new FcgiRecord(header, body));
-      header = null;
+      _streamController.add(new FcgiRecord(_header, body));
+      _header = null;
     }
   }
 

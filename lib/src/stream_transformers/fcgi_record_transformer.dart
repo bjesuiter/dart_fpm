@@ -32,7 +32,7 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
       _skipBytes = 0;
       _handleDataChunk(byteReader);
       _buffer = byteReader.remainingBytes;
-    });
+    }, onError: _streamController.addError);
 
     return _streamController.stream;
   }

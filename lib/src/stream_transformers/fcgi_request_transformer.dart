@@ -17,7 +17,7 @@ class FcgiRequestTransformer implements StreamTransformer<FcgiRecord, Request> {
   Stream<Request> bind(Stream<FcgiRecord> stream) {
     stream.listen((record) {
       _handleRecord(record);
-    });
+    }, onError: _streamController.addError);
     return _streamController.stream;
   }
 

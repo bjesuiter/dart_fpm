@@ -1,4 +1,4 @@
-library dart_fpm.handle_connection;
+library dart_fpm.connection_handler;
 
 import 'dart:io';
 import 'dart:async';

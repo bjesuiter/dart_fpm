@@ -2,11 +2,13 @@ library dart_fpm.fcgi_request_transformer;
 
 import 'dart:async';
 import '../fcgi/fcgi.dart';
+import 'package:logging/logging.dart';
 
 class FcgiRequestTransformer implements StreamTransformer<FcgiRecord, Request> {
 
   final StreamController<Request> _streamController = new StreamController();
   final StreamSink<FcgiRecord> managementRecords;
+  final Logger _log = new Logger("FcgiRequestTransformer");
 
   final Map<int, Request> _requests = new Map();
 
@@ -22,6 +24,7 @@ class FcgiRequestTransformer implements StreamTransformer<FcgiRecord, Request> {
   }
 
   void _handleRecord (FcgiRecord record) {
+    _log.info("-> $record");
     if (record.header.requestId == FCGI_NULL_REQUEST_ID) {
       managementRecords.add(record);
       return;

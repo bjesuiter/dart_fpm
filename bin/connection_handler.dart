@@ -28,21 +28,21 @@ class ConnectionHandler {
   requestHandler(Request request) {
     Response response = new Response(request.requestId, (response, data) {
       socketAdd(
-          socket,
+
           new FcgiRecord.generateResponse(
               response.requestId, new FcgiStreamBody.fromString(RecordType.STDOUT, data.toString())));
     }, (response, error) {
       socketAdd(
-          socket,
+
           new FcgiRecord.generateResponse(
               response.requestId, new FcgiStreamBody.fromString(RecordType.STDERR, error.toString())));
     }, (response) {
       socketAdd(
-          socket, new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
+          new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
       socketAdd(
-          socket, new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
+          new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
       socketAdd(
-          socket,
+
           new FcgiRecord.generateResponse(
               response.requestId, new EndRequestBody(response.appStatus, response.protocolStatus)));
       if (!request.keepAlive) {
@@ -67,14 +67,14 @@ class ConnectionHandler {
     if (data is FcgiRecord) {
       int requestId = data.header.requestId;
       if (requestId != FCGI_NULL_REQUEST_ID) {
-        socketAdd(socket, new FcgiRecord.generateResponse(requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
-        socketAdd(socket, new FcgiRecord.generateResponse(requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
+        socketAdd(new FcgiRecord.generateResponse(requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
+        socketAdd(new FcgiRecord.generateResponse(requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
       }
-      socketAdd(socket, data);
+      socketAdd(data);
     }
   }
 
-  socketAdd(Socket socket, FcgiRecord record) {
+  socketAdd(FcgiRecord record) {
     _log.info("<- $record");
 
     socket.add(record.toByteStream());

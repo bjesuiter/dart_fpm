@@ -9,9 +9,17 @@ import 'package:logging/logging.dart';
 Logger _log = new Logger("dart_fpm.handle_connection");
 
 class ConnectionHandler {
+
+  static List<Socket> sockets;
+  Map<int, Isolate> isolates;
+
   Socket socket;
 
-  ConnectionHandler(this.socket);
+  ConnectionHandler(this.socket) {
+    if (!sockets.contains(socket)) {
+      sockets.add(socket);
+    }
+  }
 
   requestHandler(Request request) {
     var onData = (response, data) {
@@ -65,6 +73,10 @@ class ConnectionHandler {
     var isolateFuture = Isolate.spawnUri(
         file.uri, [], commandPort.sendPort, onExit: exitPort.sendPort, onError: errorPort.sendPort);
 
+    isolateFuture.then((isolate) {
+      isolates[request.requestId] = isolate;
+    });
+
     response.close();
   }
 
@@ -78,6 +90,12 @@ class ConnectionHandler {
     if (data is FcgiRecord) {
       int requestId = data.header.requestId;
       if (requestId != FCGI_NULL_REQUEST_ID) {
+        if (data.header.type == RecordType.ABORT_REQUEST) {
+          //isolate abbrechen
+          // end request senden
+          return;
+        }
+
         socketAdd(new FcgiRecord.generateResponse(requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
         socketAdd(new FcgiRecord.generateResponse(requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
       }

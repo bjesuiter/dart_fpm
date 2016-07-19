@@ -4,6 +4,7 @@ import 'package:dart_fpm/src/fcgi/fcgi.dart';
 import 'dart:async';
 
 typedef void DataFunction(Response, String);
+
 typedef void DoneFunction(Response);
 
 class Response {
@@ -40,14 +41,19 @@ class Response {
         cancelOnError: false);
   }
 
-  StreamSink<String> get output  => _output;
+  StreamSink<String> get output => _output;
 
-  void close () {
+  void close() {
     _output.close();
   }
 
   void header(dynamic entry) {
     _header.add(entry.toString());
   }
+
+  FcgiRecord get endRequestRecord =>
+      new FcgiRecord.generateResponse(
+          requestId, new EndRequestBody(appStatus, protocolStatus));
+
 
 }

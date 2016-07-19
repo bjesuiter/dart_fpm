@@ -9,6 +9,11 @@ typedef void DataFunction(Response, String);
 typedef void DoneFunction(Response);
 
 class Response {
+
+  //TODO: move isolate to response object
+  //TODO: move control / data / error ports into response object from connection_handler
+
+
   final int requestId;
   ProtocolStatus protocolStatus = ProtocolStatus.REQUEST_COMPLETE;
   int appStatus = 0;

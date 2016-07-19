@@ -37,19 +37,8 @@ handleConnection(Socket socket) {
       });
 
     //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
-//    response.header("Content-Type: text/html; encoding=utf-8");
-    response.output.add('''
-<!DOCTYPE html>
-<html>
-<head>
-<title>Test</title>
-</head>
-<body>
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
-</body>
-</html>
-''');
+//    response.header("Content-Type: text/plain; encoding=utf-8");
+    response.output.add(request.params.toString());
       response.close();
   }, onError: (data) {
     //TODO: check if stream is already closed (SocketException)

@@ -41,19 +41,19 @@ class ConnectionHandler {
       }
     };
 
-    Response response = new Response(request.requestId, onData, onError, onDone);
+    Response response = new Response(request, onData, onError, onDone);
 
     //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
     response.header("Content-Type: text/plain; encoding=utf-8");
-    response.output.add(request.params.toString());
+    response.add(request.params.toString());
 
     var scriptPath = request.params["SCRIPT_FILENAME"];
 
-    if (scriptPath.isEmpty) response.output.addError("ScriptPath should not be empty!");
+    if (scriptPath.isEmpty) response.addError("ScriptPath should not be empty!");
 
     var file = new File(scriptPath);
     if (!file.existsSync())
-      response.output.addError(new FileSystemException("Script not available", scriptPath));
+      response.addError(new FileSystemException("Script not available", scriptPath));
 
     var commandPort = new ReceivePort()
       ..listen((data) {
@@ -65,13 +65,8 @@ class ConnectionHandler {
         return data;
       });
 
-    var errorPort = new ReceivePort()
-      ..listen((error) {
-        throw error;
-      });
-
     var isolateFuture = Isolate.spawnUri(
-        file.uri, [], commandPort.sendPort, onExit: exitPort.sendPort, onError: errorPort.sendPort);
+        file.uri, [], commandPort.sendPort, onExit: exitPort.sendPort, onError: response.stderr);
 
     isolateFuture.then((isolate) {
       isolates[request.requestId] = isolate;

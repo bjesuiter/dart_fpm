@@ -7,14 +7,25 @@ import 'package:logging/logging.dart';
 
 Logger _log = new Logger("dart_fpm.handle_connection");
 
-handleConnection(Socket socket) {
-  StreamController<FcgiRecord> managementRecords = new StreamController();
-  managementRecords.stream.listen((record) {
-    //TODO: handle management records
-  });
+class ConnectionHandler {
 
-  socket.transform(new FcgiRecordTransformer()).transform(new FcgiRequestTransformer(managementRecords)).listen(
-      (Request request) {
+  Socket socket;
+  StreamController<FcgiRecord> managementRecords = new StreamController();
+
+  ConnectionHandler(this.socket);
+
+  handle() {
+    managementRecords.stream.listen((record) {
+      //TODO: handle management records
+    });
+
+    socket
+        .transform(new FcgiRecordTransformer())
+        .transform(new FcgiRequestTransformer(managementRecords))
+        .listen(requestHandler, onError: requestHandler_onError);
+  }
+
+  requestHandler(Request request) {
     Response response = new Response(request.requestId, (response, data) {
       socketAdd(
           socket,
@@ -39,11 +50,14 @@ handleConnection(Socket socket) {
       }
     });
 
+
     //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
 //    response.header("Content-Type: text/plain; encoding=utf-8");
     response.output.add(request.params.toString());
-      response.close();
-  }, onError: (data) {
+    response.close();
+  }
+
+  requestHandler_onError(data) {
     //TODO: check if stream is already closed (SocketException)
     if (data is SocketException) {
       //clean all available things for this requestID
@@ -58,11 +72,13 @@ handleConnection(Socket socket) {
       }
       socketAdd(socket, data);
     }
-  });
+  }
+
+  socketAdd(Socket socket, FcgiRecord record) {
+    _log.info("<- $record");
+
+    socket.add(record.toByteStream());
+  }
+
 }
 
-socketAdd(Socket socket, FcgiRecord record) {
-  _log.info("<- $record");
-
-  socket.add(record.toByteStream());
-}

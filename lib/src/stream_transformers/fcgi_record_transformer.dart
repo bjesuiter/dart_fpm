@@ -1,7 +1,6 @@
 library dart_fpm.fcgi_record_transformer;
 
 import 'dart:async';
-import 'dart:io';
 import 'package:dart_fpm/src/fcgi/fcgi.dart';
 import 'package:dart_fpm/src/bytereader.dart';
 import 'package:logging/logging.dart';
@@ -90,7 +89,7 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
           _activeRequests.add(_header.requestId);
           break;
         case RecordType.ABORT_REQUEST:
-          body = null;
+          body = new AbortRequestBody();
           break;
         case RecordType.GET_VALUES:
         case RecordType.PARAMS:

@@ -41,6 +41,9 @@ class FcgiRequestTransformer implements StreamTransformer<FcgiRecord, Request> {
       case RecordType.BEGIN_REQUEST:
         _requests[record.header.requestId] = new Request(record);
         break;
+      case RecordType.ABORT_REQUEST:
+        _streamController.addError(record);
+        break;
       case RecordType.PARAMS:
         _requests[record.header.requestId].addParams(record.body);
         break;

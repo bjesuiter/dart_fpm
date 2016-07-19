@@ -26,33 +26,35 @@ class ConnectionHandler {
   }
 
   requestHandler(Request request) {
-    Response response = new Response(request.requestId, (response, data) {
+    var onData = (response, data) {
       socketAdd(
-
           new FcgiRecord.generateResponse(
               response.requestId, new FcgiStreamBody.fromString(RecordType.STDOUT, data.toString())));
-    }, (response, error) {
+    };
+
+    var onError = (response, error) {
       socketAdd(
 
           new FcgiRecord.generateResponse(
               response.requestId, new FcgiStreamBody.fromString(RecordType.STDERR, error.toString())));
-    }, (response) {
+    };
+
+    var onDone = (Response response) {
       socketAdd(
           new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
       socketAdd(
           new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
-      socketAdd(
-
-          new FcgiRecord.generateResponse(
-              response.requestId, new EndRequestBody(response.appStatus, response.protocolStatus)));
+      socketAdd(response.endRequestRecord);
       if (!request.keepAlive) {
         socket.close();
       }
-    });
+    };
+
+    Response response = new Response(request.requestId, onData, onError, onDone);
 
 
     //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
-//    response.header("Content-Type: text/plain; encoding=utf-8");
+    response.header("Content-Type: text/plain; encoding=utf-8");
     response.output.add(request.params.toString());
     response.close();
   }

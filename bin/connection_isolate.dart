@@ -2,9 +2,11 @@ library dart_fpmt.connection_isolate;
 
 import 'dart:isolate';
 import 'dart:io';
+import 'dart:async';
 import 'connection_handler.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:isolate/isolate.dart';
+import 'package:dart_fpm/dart_fpm.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_handlers/server_logging_handlers.dart';
 
@@ -23,6 +25,17 @@ main(List<String> args, SendPort reply) async {
   });
 
   await for (var socket in serverSocket) {
-    new ConnectionHandler(socket).handle();
+    StreamController<FcgiRecord> managementRecords = new StreamController();
+
+    managementRecords.stream.listen((record) {
+      //TODO: handle management records
+    });
+
+    var connectionHandler = new ConnectionHandler(socket);
+
+    socket
+        .transform(new FcgiRecordTransformer())
+        .transform(new FcgiRequestTransformer(managementRecords))
+        .listen(connectionHandler.requestHandler, onError: connectionHandler.requestHandler_onError);
   }
 }

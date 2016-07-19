@@ -2,48 +2,31 @@ library dart_fpm.connection_handler;
 
 import 'dart:io';
 import 'dart:async';
+import 'dart:isolate';
 import 'package:dart_fpm/dart_fpm.dart';
 import 'package:logging/logging.dart';
 
 Logger _log = new Logger("dart_fpm.handle_connection");
 
 class ConnectionHandler {
-
   Socket socket;
-  StreamController<FcgiRecord> managementRecords = new StreamController();
 
   ConnectionHandler(this.socket);
 
-  handle() {
-    managementRecords.stream.listen((record) {
-      //TODO: handle management records
-    });
-
-    socket
-        .transform(new FcgiRecordTransformer())
-        .transform(new FcgiRequestTransformer(managementRecords))
-        .listen(requestHandler, onError: requestHandler_onError);
-  }
-
   requestHandler(Request request) {
     var onData = (response, data) {
-      socketAdd(
-          new FcgiRecord.generateResponse(
-              response.requestId, new FcgiStreamBody.fromString(RecordType.STDOUT, data.toString())));
+      socketAdd(new FcgiRecord.generateResponse(
+          response.requestId, new FcgiStreamBody.fromString(RecordType.STDOUT, data.toString())));
     };
 
     var onError = (response, error) {
-      socketAdd(
-
-          new FcgiRecord.generateResponse(
-              response.requestId, new FcgiStreamBody.fromString(RecordType.STDERR, error.toString())));
+      socketAdd(new FcgiRecord.generateResponse(
+          response.requestId, new FcgiStreamBody.fromString(RecordType.STDERR, error.toString())));
     };
 
     var onDone = (Response response) {
-      socketAdd(
-          new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
-      socketAdd(
-          new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
+      socketAdd(new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
+      socketAdd(new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
       socketAdd(response.endRequestRecord);
       if (!request.keepAlive) {
         socket.close();
@@ -52,10 +35,36 @@ class ConnectionHandler {
 
     Response response = new Response(request.requestId, onData, onError, onDone);
 
-
     //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
     response.header("Content-Type: text/plain; encoding=utf-8");
     response.output.add(request.params.toString());
+
+    var scriptPath = request.params["SCRIPT_FILENAME"];
+
+    if (scriptPath.isEmpty) response.output.addError("ScriptPath should not be empty!");
+
+    var file = new File(scriptPath);
+    if (!file.existsSync())
+      response.output.addError(new FileSystemException("Script not available", scriptPath));
+
+    var commandPort = new ReceivePort()
+      ..listen((data) {
+
+      });
+
+    var exitPort = new ReceivePort()
+      ..listen((data) {
+        return data;
+      });
+
+    var errorPort = new ReceivePort()
+      ..listen((error) {
+        throw error;
+      });
+
+    var isolateFuture = Isolate.spawnUri(
+        file.uri, [], commandPort.sendPort, onExit: exitPort.sendPort, onError: errorPort.sendPort);
+
     response.close();
   }
 
@@ -81,6 +90,4 @@ class ConnectionHandler {
 
     socket.add(record.toByteStream());
   }
-
 }
-

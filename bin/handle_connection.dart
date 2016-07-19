@@ -8,33 +8,36 @@ import 'package:logging/logging.dart';
 Logger _log = new Logger("dart_fpm.handle_connection");
 
 handleConnection(Socket socket) {
-
   StreamController<FcgiRecord> managementRecords = new StreamController();
   managementRecords.stream.listen((record) {
     //TODO: handle management records
   });
 
-  socket
-      .transform(new FcgiRecordTransformer())
-      .transform(new FcgiRequestTransformer(managementRecords))
-      .listen((Request request) {
-      Response response = new Response(request.requestId, (response, data) {
-        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
-            new FcgiStreamBody.fromString(RecordType.STDOUT, data.toString())));
-      }, (response, error) {
-        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
-            new FcgiStreamBody.fromString(RecordType.STDERR, error.toString())));
-      }, (response) {
-        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
-            new FcgiStreamBody.empty(RecordType.STDOUT)));
-        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
-            new FcgiStreamBody.empty(RecordType.STDERR)));
-        socketAdd(socket, new FcgiRecord.generateResponse(response.requestId,
-            new EndRequestBody(response.appStatus, response.protocolStatus)));
-        if (!request.keepAlive) {
-          socket.close();
-        }
-      });
+  socket.transform(new FcgiRecordTransformer()).transform(new FcgiRequestTransformer(managementRecords)).listen(
+      (Request request) {
+    Response response = new Response(request.requestId, (response, data) {
+      socketAdd(
+          socket,
+          new FcgiRecord.generateResponse(
+              response.requestId, new FcgiStreamBody.fromString(RecordType.STDOUT, data.toString())));
+    }, (response, error) {
+      socketAdd(
+          socket,
+          new FcgiRecord.generateResponse(
+              response.requestId, new FcgiStreamBody.fromString(RecordType.STDERR, error.toString())));
+    }, (response) {
+      socketAdd(
+          socket, new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
+      socketAdd(
+          socket, new FcgiRecord.generateResponse(response.requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
+      socketAdd(
+          socket,
+          new FcgiRecord.generateResponse(
+              response.requestId, new EndRequestBody(response.appStatus, response.protocolStatus)));
+      if (!request.keepAlive) {
+        socket.close();
+      }
+    });
 
     //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
 //    response.header("Content-Type: text/plain; encoding=utf-8");
@@ -50,10 +53,8 @@ handleConnection(Socket socket) {
     if (data is FcgiRecord) {
       int requestId = data.header.requestId;
       if (requestId != FCGI_NULL_REQUEST_ID) {
-        socketAdd(socket, new FcgiRecord.generateResponse(requestId,
-            new FcgiStreamBody.empty(RecordType.STDOUT)));
-        socketAdd(socket, new FcgiRecord.generateResponse(requestId,
-            new FcgiStreamBody.empty(RecordType.STDERR)));
+        socketAdd(socket, new FcgiRecord.generateResponse(requestId, new FcgiStreamBody.empty(RecordType.STDOUT)));
+        socketAdd(socket, new FcgiRecord.generateResponse(requestId, new FcgiStreamBody.empty(RecordType.STDERR)));
       }
       socketAdd(socket, data);
     }

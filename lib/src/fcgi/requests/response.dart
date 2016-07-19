@@ -11,7 +11,6 @@ typedef void DataFunction(Response, String);
 typedef void DoneFunction(Response);
 
 class Response implements StreamSink {
-
   //TODO: move isolate to response object
   //TODO: move control / data / error ports into response object from connection_handler
 
@@ -48,7 +47,6 @@ class Response implements StreamSink {
 
   int get requestId => request.requestId;
 
-
   @override
   void add(event) {
     _output.add(event);
@@ -62,13 +60,11 @@ class Response implements StreamSink {
   @override
   Future addStream(Stream stream) => _output.addStream(stream);
 
-  Future close() =>
-      _output.close();
+  Future close() => _output.close();
 
   void header(dynamic entry) {
     _header.add(entry.toString());
   }
-
 
   void _createListener(DataFunction onData, DataFunction onError, DoneFunction onDone) {
     _output.stream.listen((data) {

@@ -2,7 +2,7 @@ library dart_fpmt.connection_isolate;
 
 import 'dart:isolate';
 import 'dart:io';
-import 'handle_connection.dart';
+import 'connection_handler.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:isolate/isolate.dart';
 import 'package:logging/logging.dart';
@@ -23,6 +23,6 @@ main(List<String> args, SendPort reply) async {
   });
 
   await for (var socket in serverSocket) {
-    handleConnection(socket);
+    new ConnectionHandler(socket).handle();
   }
 }

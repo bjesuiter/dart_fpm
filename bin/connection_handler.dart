@@ -11,8 +11,8 @@ Logger _log = new Logger("dart_fpm.handle_connection");
 
 class ConnectionHandler {
 
-  static List<Socket> sockets;
-  Map<int, Isolate> isolates;
+  static List<Socket> sockets = [];
+  Map<int, Isolate> isolates = {};
 
   Socket socket;
 
@@ -46,30 +46,32 @@ class ConnectionHandler {
 
     //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
     response.header("Content-Type: text/plain; encoding=utf-8");
-    response.add(request.params.toString());
+//    response.add(request.params.toString());
 
     var scriptPath = request.params["SCRIPT_FILENAME"];
 
     if (scriptPath.isEmpty) response.addError("ScriptPath should not be empty!");
 
     var file = new File(scriptPath);
-    if (!file.existsSync())
+    if (!file.existsSync()) {
       response.addError(new FileSystemException("Script not available", scriptPath));
+      return;
+    }
 
 
     var exitPort = new ReceivePort()
       ..listen((data) {
-        return data;
+        response.close();
       });
 
+    //span the called script in extra isolate
     var isolateFuture = Isolate.spawnUri(
-        file.uri, [], response.stdout, onExit: exitPort.sendPort, onError: response.stderr);
+        file.uri, [], response.stdout, onExit: exitPort.sendPort, onError: response.stderr,
+        environment: request.params);
 
     isolateFuture.then((isolate) {
       isolates[request.requestId] = isolate;
     });
-
-    response.close();
   }
 
   requestHandler_onError(data) {

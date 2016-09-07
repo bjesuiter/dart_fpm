@@ -18,8 +18,8 @@ class Response {
 
   Response._(this.requestId);
 
-  factory Response (int requestId, Function onData, Function onError,
-      Function onDone) {
+  factory Response (int requestId, DataFunction onData, DataFunction onError,
+      DoneFunction onDone) {
     Response response = new Response._(requestId);
     response._createListener(onData, onError, onDone);
     return response;
@@ -30,7 +30,7 @@ class Response {
     _output.stream.listen((data) {
       if (!_headerSent) {
         onData(this, "${_header.join("\r\n")}\r\n\r\n");
-        _headerSent;
+        _headerSent = true;
       }
       onData(this, data);
     }, onError: (error) {

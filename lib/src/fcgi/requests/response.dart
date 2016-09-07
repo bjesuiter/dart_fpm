@@ -78,7 +78,7 @@ class Response implements StreamSink {
     _output.stream.listen((data) {
       if (!_headerSent) {
         onData(this, "${_header.join("\r\n")}\r\n\r\n");
-        _headerSent;
+        _headerSent = true;
       }
       onData(this, data);
     }, onError: (error) {

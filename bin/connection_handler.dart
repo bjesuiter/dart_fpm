@@ -1,7 +1,7 @@
 library dart_fpm.connection_handler;
 
 import 'dart:io';
-import 'dart:async';
+import 'dart:convert';
 import 'dart:isolate';
 import 'package:dart_fpm/dart_fpm.dart';
 import 'package:logging/logging.dart';
@@ -63,14 +63,15 @@ class ConnectionHandler {
       });
 
     //span the called script in extra isolate
-    var isolateFuture = Isolate.spawnUri(file.uri, [], response.stdout,
+    var isolateFuture = Isolate.spawnUri(
+        file.uri, [await request.stdin, JSON.encode(request.params)], response.stdout,
         onExit: exitPort.sendPort, onError: response.stderr, environment: request.params);
 
     isolateFuture.then((isolate) {
       isolates[request.requestId] = isolate;
     }).catchError((error) {
-//      response.addError(error.toString());
-      response.add(error.toString());
+//      response.add(error.toString());
+      response.addError(error.toString());
       response.appStatus = -1;
       response.close();
     });

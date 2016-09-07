@@ -64,7 +64,7 @@ class ConnectionHandler {
 
     //span the called script in extra isolate
     var isolateFuture = Isolate.spawnUri(
-        file.uri, [await request.stdin, JSON.encode(request.params)], response.stdout,
+        file.uri, [request.stdin, JSON.encode(request.params)], response.stdout,
         onExit: exitPort.sendPort, onError: response.stderr, environment: request.params);
 
     isolateFuture.then((isolate) {

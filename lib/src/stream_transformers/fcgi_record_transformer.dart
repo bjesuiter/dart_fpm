@@ -29,7 +29,11 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
       var byteReader = new ByteReader(_buffer, offset: _skipBytes);
       //reset skip bytes
       _skipBytes = 0;
-      _handleDataChunk(byteReader);
+      try {
+        _handleDataChunk(byteReader);
+      } on int catch (skipBytes) {
+        _skipBytes = skipBytes;
+      }
       _buffer = byteReader.remainingBytes;
     }, onError: _streamController.addError);
 
@@ -50,14 +54,8 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
           //unknown record type - skip that body and give to outStream as error!
           _streamController.addError(record);
 
-          if (dataChunk.available(record.bodyLength)) {
-            dataChunk.skip(record.bodyLength);
-            continue;
-          }
-
-          //case if data to skip is not completely available
-          _skipBytes = record.bodyLength;
-          return;
+          skipBytes(dataChunk, record.bodyLength);
+          continue;
         }
       }
 
@@ -69,9 +67,10 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
       if (_header.requestId != FCGI_NULL_REQUEST_ID &&
           !_activeRequests.contains(_header.requestId) &&
           _header.type != RecordType.BEGIN_REQUEST) {
-        //requestId invalid
-        dataChunk.skip(_header.bodyLength);
+        //requestId invalid -> ignore record
+        var bodyLength = _header.bodyLength;
         _header = null;
+        skipBytes(dataChunk, bodyLength);
         continue;
       }
 
@@ -100,7 +99,10 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
           body = new FcgiStreamBody.fromByteStream(_header, dataChunk);
           break;
         default:
-        // invalid type - ignore record / send to out stream
+          // invalid type - ignore record / send to out stream
+          var bodyLength = _header.bodyLength;
+          _header = null;
+          skipBytes(dataChunk, bodyLength);
       }
 
       dataChunk.skip(_header.paddingLength);
@@ -109,6 +111,15 @@ class FcgiRecordTransformer implements StreamTransformer<List<int>, FcgiRecord> 
       _streamController.add(new FcgiRecord(_header, body));
       _header = null;
     }
+  }
+
+  void skipBytes(ByteReader dataChunk, int length) {
+    if (dataChunk.available(length)) {
+      dataChunk.skip(length);
+      return;
+    }
+    //case if data to skip is not completely available
+    throw length;
   }
 
 }

@@ -23,7 +23,7 @@ class FcgiRequestTransformer implements StreamTransformer<FcgiRecord, Request> {
     return _streamController.stream;
   }
 
-  void _handleRecord (FcgiRecord record) {
+  void _handleRecord(FcgiRecord record) {
     _log.info("-> $record");
     if (record.header.requestId == FCGI_NULL_REQUEST_ID) {
       managementRecords.add(record);
@@ -35,8 +35,9 @@ class FcgiRequestTransformer implements StreamTransformer<FcgiRecord, Request> {
     }
     if (record.header.type == RecordType.STDIN && record.body.contentLength == 0) {
       var request = _requests.remove(record.header.requestId);
-      request.complete();
-      _streamController.add(request);
+      request.complete().then((_) {
+        _streamController.add(request);
+      });
       return;
     }
     switch (record.header.type) {

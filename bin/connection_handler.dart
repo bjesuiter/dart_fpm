@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:isolate';
 import 'package:dart_fpm/dart_fpm.dart';
 import 'package:logging/logging.dart';
+import 'package:stream_channel/stream_channel.dart';
 
 Logger _log = new Logger("dart_fpm.handle_connection");
 
@@ -55,10 +56,6 @@ class ConnectionHandler {
     if (!file.existsSync())
       response.addError(new FileSystemException("Script not available", scriptPath));
 
-    var commandPort = new ReceivePort()
-      ..listen((data) {
-
-      });
 
     var exitPort = new ReceivePort()
       ..listen((data) {
@@ -66,7 +63,7 @@ class ConnectionHandler {
       });
 
     var isolateFuture = Isolate.spawnUri(
-        file.uri, [], commandPort.sendPort, onExit: exitPort.sendPort, onError: response.stderr);
+        file.uri, [], response.stdout, onExit: exitPort.sendPort, onError: response.stderr);
 
     isolateFuture.then((isolate) {
       isolates[request.requestId] = isolate;

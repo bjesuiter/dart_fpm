@@ -3,13 +3,32 @@ import 'dart:isolate';
 import 'dart:io';
 
 main(List<String> args, SendPort stdout) {
-  //Output content through stdout
-  stdout.send("This is a test Message from SampleScript <br>");
-
   var stdin = args[0];
   Map<String, String> params = JSON.decode(args[1]);
 
-  params.forEach((k, v) => stdout.send("Key=$k Value=$v <br>"));
+  stdout.send('''
+  <html>
+  <head>
+  <title>Sample Script</title>
+  </head>
+
+  <body>
+  <h1>This is a test Message from SampleScript</h1>
+  </body>
+
+  <table>
+  <tr>
+  <th>Param</th>
+  <th>Value</th>
+  </tr>
+
+  ${ params.keys.fold("", (content, key) =>
+  "$content <tr><td>$key </td><td>${params[key]}</td></tr>")
+  }
+  </table>
+  </html>
+  ''');
+
 
   //Return exitCode different from 0 for testing
   return 2;

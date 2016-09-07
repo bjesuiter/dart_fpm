@@ -7,7 +7,7 @@ import 'package:dart_fpm/dart_fpm.dart';
 import 'package:logging/logging.dart';
 import 'package:stream_channel/stream_channel.dart';
 
-Logger _log = new Logger("dart_fpm.handle_connection");
+Logger _log = new Logger("dart_fpm.connection_handler");
 
 class ConnectionHandler {
   static List<Socket> sockets = [];
@@ -44,7 +44,7 @@ class ConnectionHandler {
     Response response = new Response(request, onData, onError, onDone);
 
     //IMPORTANT: SEND CONTENT TYPE OF RETURN FIRST!!!
-    response.header("Content-Type: text/plain; encoding=utf-8");
+    response.header("Content-Type: text/html; encoding=utf-8");
 //    response.add(request.params.toString());
 
     var scriptPath = request.params["SCRIPT_FILENAME"];
@@ -64,8 +64,11 @@ class ConnectionHandler {
 
     //span the called script in extra isolate
     var isolateFuture = Isolate.spawnUri(
-        file.uri, [request.stdin, JSON.encode(request.params)], response.stdout,
-        onExit: exitPort.sendPort, onError: response.stderr, environment: request.params);
+        file.uri,
+        [request.stdin, JSON.encode(request.params)],
+//        [],
+        response.stdout,
+        onExit: exitPort.sendPort, onError: response.stderr);
 
     isolateFuture.then((isolate) {
       isolates[request.requestId] = isolate;

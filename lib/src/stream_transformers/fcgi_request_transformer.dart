@@ -34,7 +34,9 @@ class FcgiRequestTransformer implements StreamTransformer<FcgiRecord, Request> {
       return;
     }
     if (record.header.type == RecordType.STDIN && record.body.contentLength == 0) {
-      _streamController.add(_requests.remove(record.header.requestId));
+      var request = _requests.remove(record.header.requestId);
+      request.complete();
+      _streamController.add(request);
       return;
     }
     switch (record.header.type) {

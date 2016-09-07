@@ -10,13 +10,14 @@ main(List<String> args, SendPort stdout) {
   <html>
   <head>
   <title>Sample Script</title>
+  <link href="bnware-generic-smooth.css" type="text/css" rel="stylesheet">
   </head>
 
   <body>
   <h1>This is a test Message from SampleScript</h1>
   </body>
 
-  <table>
+  <table class="bnware-smooth">
   <tr>
   <th>Param</th>
   <th>Value</th>

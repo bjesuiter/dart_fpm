@@ -16,13 +16,13 @@ class Response implements StreamSink {
 
   final Request request;
 
-  final ReceivePort _stdout;
+  final ReceivePort _outPort = new ReceivePort();
 
-  SendPort get stdout => _stdout.sendPort;
+  SendPort get stdout => _outPort.sendPort;
 
-  final ReceivePort _stderr;
+  final ReceivePort _errorPort = new ReceivePort();
 
-  SendPort get stderr => _stderr.sendPort;
+  SendPort get stderr => _errorPort.sendPort;
 
   ProtocolStatus protocolStatus = ProtocolStatus.REQUEST_COMPLETE;
 
@@ -37,7 +37,15 @@ class Response implements StreamSink {
     return response;
   }
 
-  Response._(this.request);
+  Response._(this.request) {
+    _outPort.listen((data) {
+      add(data);
+    });
+
+    _errorPort.listen((error) {
+      addError(error);
+    });
+  }
 
   @override
   Future get done => _output.done;

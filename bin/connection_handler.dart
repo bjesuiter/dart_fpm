@@ -10,7 +10,6 @@ import 'package:stream_channel/stream_channel.dart';
 Logger _log = new Logger("dart_fpm.handle_connection");
 
 class ConnectionHandler {
-
   static List<Socket> sockets = [];
   Map<int, Isolate> isolates = {};
 
@@ -58,19 +57,22 @@ class ConnectionHandler {
       return;
     }
 
-
     var exitPort = new ReceivePort()
       ..listen((data) {
         response.close();
       });
 
     //span the called script in extra isolate
-    var isolateFuture = Isolate.spawnUri(
-        file.uri, [], response.stdout, onExit: exitPort.sendPort, onError: response.stderr,
-        environment: request.params);
+    var isolateFuture = Isolate.spawnUri(file.uri, [], response.stdout,
+        onExit: exitPort.sendPort, onError: response.stderr, environment: request.params);
 
     isolateFuture.then((isolate) {
       isolates[request.requestId] = isolate;
+    }).catchError((error) {
+//      response.addError(error.toString());
+      response.add(error.toString());
+      response.appStatus = -1;
+      response.close();
     });
   }
 

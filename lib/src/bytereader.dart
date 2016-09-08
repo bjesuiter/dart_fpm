@@ -17,7 +17,7 @@ class ByteReader {
 
   int get nextInt => (nextShort << 16) | nextShort;
 
-  int get nextVarByte => ((_data.elementAt(_offset) >> 7) == 0) ? nextByte : nextInt;
+  int get nextVarByte => ((_data.elementAt(_offset) >> 7) == 0) ? nextByte : nextInt & ~(1 << 31);
 
   bool available (int bytes) => (_data.lengthInBytes - _offset) >= bytes;
 

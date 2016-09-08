@@ -1,0 +1,191 @@
+/*
+BNware Stylesheet for generic elements like Tables, Boxes, Buttons and so on.
+Design: smooth
+Class for elements: bnware-smooth
+Class for own ui-elements: bnware-smooth-[elementName]
+*/
+
+/*Elements with extension class
+================================*/
+
+* {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+
+/*Smooth Button
+-----------------------*/
+button.bnware-smooth {
+    /*Text Settings*/
+    text-decoration: none;
+    text-shadow: 0 1px 0 #fff;
+    font: bold 12pt 'Open Sans', Helvetica, Arial, sans-serif;
+    color: #6e6e6e;
+
+    /*Appearance*/
+    padding: 8px 12px;
+    display: inline-block;
+    transition: border-color .218s;
+    cursor: pointer;
+
+    background: #f3f3f3;
+    background: -webkit-gradient(linear, 0% 40%, 0% 70%, from(#F5F5F5), to(#F1F1F1));
+    background: -moz-linear-gradient(linear, 0% 40%, 0% 70%, from(#F5F5F5), to(#F1F1F1));
+
+    /*Border Settings*/
+    border: solid 1px #dcdcdc;
+    border-radius: 2px;
+    margin: 5px 5px 10px 0;
+}
+
+button.bnware-smooth:hover {
+    color: #333;
+    border-color: #999;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+button.bnware-smooth:active {
+    color: #000;
+    border-color: #444;
+}
+
+button.bnware-smooth[disabled] {
+    background: -webkit-gradient(linear, 0% 40%, 0% 70%, from(#A5A5A5), to(#A1A1A1));
+    background: -moz-linear-gradient(linear, 0% 40%, 0% 70%, from(#F5F5F5), to(#F1F1F1));
+    text-shadow: none;
+}
+
+button.bnware-smooth[disabled]:hover {
+    color: #6e6e6e;
+    border: solid 1px #dcdcdc;
+    box-shadow: none;
+
+    cursor: default;
+
+}
+
+
+
+
+/*Smooth Table
+----------------*/
+table.bnware-smooth {
+    overflow: hidden;
+    width: 100%;
+    background: #fefefe;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    border-collapse: collapse;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+
+    text-align: center;
+}
+
+table.bnware-smooth th, table.bnware-smooth thead {
+    padding: 10px 8px 8px;
+    text-shadow: 1px 1px 1px #fff;
+    background: #e8eaeb;
+    text-align: center;
+}
+
+table.bnware-smooth td {
+    border-top: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+
+    /*Background Gradient*/
+    background: -moz-linear-gradient(100% 25% 90deg, #fefefe, #f9f9f9);
+    background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#f9f9f9), to(#fefefe));
+
+    padding: 10px 5px;
+}
+
+table.bnware-smooth tr.odd td {
+    background: -moz-linear-gradient(100% 25% 90deg, #f6f6f6, #f1f1f1);
+    background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#f1f1f1), to(#f6f6f6));
+    background: #f6f6f6; /*for IE 9*/
+}
+
+/*
+tr.even is not neccessary,
+because all Properties are normal
+when tr.odd is removed or not present
+*/
+
+table.bnware-smooth tr td:last-child {
+    border-right: none;
+}
+
+
+/*Invisible Input
+--------------------*/
+input.bnware-smooth-invisible {
+    border: 0;
+    font-size: 12pt;
+    background-color: transparent;
+    text-align: center;
+    min-width: 50px;
+}
+
+/*Styled Input
+-------------------*/
+input.bnware-smooth, textarea.bnware-smooth {
+    border: 2px #dddddd solid;
+    border-radius: 2px;
+    height: 2.5em;
+}
+
+/*Styled Select
+------------------*/
+select.bnware-smooth {
+    border: 2px #dddddd solid;
+    border-radius: 2px;
+    height: 2.5em;
+}
+
+/*Own Elements as classes -
+  use with block element like div or section
+===============================================*/
+
+.bnware-smooth-box {
+
+    background: #f5f5f5;
+    border: 1px solid #FFF;
+    border-radius: 5px;
+    box-shadow: 1px 2px 4px rgba(0, 0, 0, .4);
+
+    padding: 10px;
+
+    /*Font Settings*/
+    font-size: 16pt;
+    text-align: center;
+
+    overflow: hidden;
+}
+
+.bnware-smooth-table-cell {
+    overflow: hidden;
+    width: 100%;
+    background: #fefefe;
+    border: 1px solid #d3d3d3;
+    border-radius: 5px;
+    border-collapse: collapse;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+
+
+
+    border-top: 1px solid #e0e0e0;
+    border-right: 1px solid #e0e0e0;
+
+    /*Background Gradient*/
+    background: -moz-linear-gradient(100% 25% 90deg, #fefefe, #f9f9f9);
+    background: -webkit-gradient(linear, 0% 0%, 0% 25%, from(#f9f9f9), to(#fefefe));
+
+    padding: 10px 10px;
+    text-align: justify;
+}
+
+.bnware-smooth.bottom-spacing {
+    margin-bottom: 1em ;
+}

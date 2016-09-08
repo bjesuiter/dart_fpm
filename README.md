@@ -7,12 +7,12 @@ A dart handler to execute dart scripts over Fast CGI with Apache or Nginx
 
 # Example usage
 
-## Dependencies
+## 1. Dependencies
 
 - A working nginx(standalone) or apache(with fast-cgi module enabled) webserver
 - The dart sdk
 
-## Nginx Configuration
+## 2. Nginx Configuration
 
 For working fcgi passing in Nginx you need to register the dart_fpm handler in nginx config.
 Normally, one would add this part to nginx.conf.
@@ -56,6 +56,22 @@ inside the location directive for dart fcgi like this:
     location ~ \.dart$ {
         root html/www;
     }
+
+## 3. File Setup 
+
+Please copy `sample_script.dart` and `bnware-generic-smooth.css` from example folder inside this repo to your webroot. 
+
+## 4. Running the sample
+
+- Startup bin/dart_fpm.dart
+- Open a browser and go to `localhost:8080/sample_script.dart` or the path where you put the files
+- See the results
+
+### Please Note again: 
+
+This is a very early verison of dart_fpm. You can use the code in sample_script.dart as a current example. 
+But escpecially this part is subject to bigger changes in future. 
+For example, there should be cleaner passing of script params for easier access. 
 
 
 # Features and bugs

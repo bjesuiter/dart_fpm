@@ -19,6 +19,9 @@ Normally, one would add this part to nginx.conf.
 But for better structure I created a folder "servers" and added an 
 `include servers/*;` at the bottom of the `http` directive.
 
+For more information on nginx configuration, please read
+[The Beginners Guide for Nginx](http://nginx.org/en/docs/beginners_guide.html) on the Nginx homepage.
+
 The following snippet is an example how to include this fact-cgi handler for all files with *.dart.
 It has to be placed inside a `server{}` directive.
 

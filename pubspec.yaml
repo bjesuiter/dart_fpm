@@ -1,6 +1,6 @@
 name: dart_fpm
 description: A FastCGI Process Manager(fpm) for dart.
-version: 0.0.1
+version: 0.1.0
 author: Benjamin Jesuiter <bjesuiter@gmail.com>
 homepage: https://github.com/bjesuiter/dart_fpm
 

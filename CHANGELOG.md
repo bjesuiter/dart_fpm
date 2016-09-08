@@ -1,5 +1,7 @@
 # Changelog
 
-## 0.0.1
+## 0.1.0 
 
-- Initial version, created by Stagehand
+- Possibility to run dart scripts via fcgi
+- stdin and params passing over normal comand line args list
+

@@ -54,6 +54,7 @@ class ConnectionHandler {
     var file = new File(scriptPath);
     if (!file.existsSync()) {
       response.addError(new FileSystemException("Script not available", scriptPath));
+      response.close();
       return;
     }
 

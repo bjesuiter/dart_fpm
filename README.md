@@ -2,6 +2,18 @@
 
 A dart handler to execute dart scripts over Fast CGI with Apache or Nginx  
 
+---
+
+## Update: Archived on 2022-09-25 
+
+Since I don't work in dart anymore but nearly exclusively in Typescript, I'll close and archive this repo. 
+
+As it has been purely for academic purposes also, nobody should depend on it for production. 
+
+If one wants to use parts or all of it, feel free to fork the repo or copy'n paste parts of it.
+
+---
+
 **WARNING: Highly experimental!!!**
 **This is currently a personal side project, because I want to run dart files behind Nginx like php with php-fpm**
 
